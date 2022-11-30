@@ -1,0 +1,631 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 17,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "XXX"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "text",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "watth"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 0,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "xxx"
+          },
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "WITH fragments_prev AS (\n  WITH fragments AS (\n    SELECT\n      last_updated AS time,\n      state::float AS value\n    FROM\n      states\n    WHERE\n      state NOT IN ('unknown', 'unavailable', '') AND\n      entity_id = 'sensor.${sensor}' AND\n      $__timeFilter(last_updated)\n  ) \n  SELECT\n    LAG(value, 1) OVER (ORDER BY time) AS value_prev,\n    LAG(time, 1) OVER (ORDER BY time) AS time_prev,\n    time\n  FROM\n    fragments\n)\nSELECT\n  SUM(value_prev * EXTRACT(EPOCH FROM (time - time_prev)) / 3600) AS value\nFROM\n  fragments_prev",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "mean"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "statistics_short_term",
+          "timeColumn": "created",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "title": "Energie spočítaná z grafu",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "xxx"
+      },
+      "description": "V grafech je často vidět, že příkon [W] neklesá k nule a drží se trvale na konstantní hodnotě. To jsou spotřebiče, které odebírají energii ze stejné fáze. Pro přesnější výpočet je možné zadat do tohoto pole Watty, které se od hodnoty z grafu odečtou.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "text",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "watth"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 4,
+        "y": 0
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "xxx"
+          },
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "select (${always_on} * (($__to/1000.0 - $__from/1000.0) / 3600.0)) AS value\n-- $__to/1000.0\n-- $__from/1000.0\n-- ($__to/1000.0 - $__from/1000.0)",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "mean"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "statistics_short_term",
+          "timeColumn": "created",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "title": "Energie \"Always On\"",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "xxx"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "text",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "dthms"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 8,
+        "y": 0
+      },
+      "id": 9,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "xxx"
+          },
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT $__to/1000.0 - $__from/1000.0 AS value",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "mean"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "statistics_short_term",
+          "timeColumn": "created",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "title": "Časové období",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "xxx"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "blue",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "watth"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "xxx"
+          },
+          "format": "table",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "WITH fragments_prev AS (\n  WITH fragments AS (\n    SELECT\n      last_updated AS time,\n      state::float AS value\n    FROM\n      states\n    WHERE\n      state NOT IN ('unknown', 'unavailable', '') AND\n      entity_id = 'sensor.${sensor}' AND\n      $__timeFilter(last_updated)\n  ) \n  SELECT\n    LAG(value, 1) OVER (ORDER BY time) AS value_prev,\n    LAG(time, 1) OVER (ORDER BY time) AS time_prev,\n    time\n  FROM\n    fragments\n)\nSELECT\n  SUM(value_prev * EXTRACT(EPOCH FROM (time - time_prev)) / 3600) - (${always_on} * (($__to/1000.0 - $__from/1000.0) / 3600.0)) AS value\nFROM\n  fragments_prev",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "mean"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "statistics_short_term",
+          "timeColumn": "created",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "title": "Energie po odečtu \"Always On\"",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "xxx"
+      },
+      "description": "",
+      "gridPos": {
+        "h": 17,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "id": 8,
+      "options": {
+        "content": "Pomocník pro výpočty energie \\[Wh\\] z okamžitých příkonů \\[W\\] jednotlivých fází či jejich součtu.\n\nPostup:\n\n* vyber senzor (fázi nebo jejich součet)\n* vyber přesné časové období, které chceš spočítat (vpravo nahoře nebo označením oblasti v grafu)\n* volitelně doplň hodnotu \"Always On\", která se od vypočítané hodnoty odečte (anebo ji nech na 0)\n\nPoznámka: kladné hodnoty v grafech vyjadřují spotřebu v domě, záporné přísun energie z gridu když nabíjím baterie\n\nNápověda:\n\n* Fáze 1: bojler, zásuvky kuchyň (gril, topinkovač, mixér, lednice)\n* Fáze 2: indukční deska, žebřík v koupelně, myčka, pila v dílně\n* Fáze 3: trouba, zásuvky v patře (žehlení, počítače), zásuvky sklep (prádelna, plynový kotel)",
+        "mode": "markdown"
+      },
+      "pluginVersion": "9.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "xxx"
+          },
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": false,
+          "rawSql": "SELECT\n  created AS \"time\",\n  mean\nFROM statistics_short_term\nWHERE\n  $__timeFilter(created)\nORDER BY 1",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "mean"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "statistics_short_term",
+          "timeColumn": "created",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "title": "Popis",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "xxx"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "blue",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "stepAfter",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "watt"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 18,
+        "x": 0,
+        "y": 3
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "xxx"
+          },
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  last_updated AS \"time\",\n  state::integer as \"Phase 1\"\nFROM states\nWHERE\n  $__timeFilter(last_updated) and state not in ('unknown', 'unavailable', '') and entity_id = 'sensor.${sensor}'\nORDER BY last_updated;",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "mean"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "statistics_short_term",
+          "timeColumn": "created",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "type": "timeseries"
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 37,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "power_now",
+          "value": "power_now"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Senzor",
+        "multi": false,
+        "name": "sensor",
+        "options": [
+          {
+            "selected": true,
+            "text": "power_now",
+            "value": "power_now"
+          },
+          {
+            "selected": false,
+            "text": "power_now_phase_1",
+            "value": "power_now_phase_1"
+          },
+          {
+            "selected": false,
+            "text": "power_now_phase_2",
+            "value": "power_now_phase_2"
+          },
+          {
+            "selected": false,
+            "text": "power_now_phase_3",
+            "value": "power_now_phase_3"
+          }
+        ],
+        "query": "power_now,power_now_phase_1,power_now_phase_2,power_now_phase_3",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "0",
+          "value": "0"
+        },
+        "hide": 0,
+        "label": "Always On [W]",
+        "name": "always_on",
+        "options": [
+          {
+            "selected": true,
+            "text": "0",
+            "value": "0"
+          }
+        ],
+        "query": "0",
+        "skipUrlSync": false,
+        "type": "textbox"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Inspektor Energiš",
+  "uid": "yyy",
+  "version": 12,
+  "weekStart": ""
+}
