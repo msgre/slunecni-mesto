@@ -1,0 +1,16 @@
+.env
+.bash_history
+.cache
+.ipython
+.local
+*.pyc
+virtualenv
+*.egg-info
+*.sqlite3
+.idea/
+.coverage
+htmlcov
+*.srctrl*
+coverage.xml
+.ipynb_checkpoints/
+.python_history
