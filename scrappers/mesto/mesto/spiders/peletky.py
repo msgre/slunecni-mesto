@@ -12,7 +12,7 @@ class WalderaSpider(scrapy.Spider):
     def __init__(self, quantity=3, zipid=72279, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.quantity = quantity * 1050
-        self.start_urls = [f'https://www.waldera.cz/sys-ajax/getProductPrice/?params[productID]=5&params[quantity]={self.quantity}%2C00&params[transportationID]=20726&params[zipId]={zipid}']
+        self.start_urls = [f'https://www.waldera.cz/sys-ajax/getProductPrice/?params[productID]=5&params[quantity]={self.quantity}%2C00&params[transportationID]=21209&params[zipId]={zipid}']
 
     def parse(self, response):
         price = response.json()["data"]["price"].replace('&nbsp;', '').replace('Kč', '').replace(',', '.').strip()
