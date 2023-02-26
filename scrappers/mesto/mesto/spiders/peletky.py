@@ -12,12 +12,27 @@ class WalderaSpider(scrapy.Spider):
     def __init__(self, quantity=3, zipid=72279, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.quantity = quantity * 1050
-        self.start_urls = [f'https://www.waldera.cz/sys-ajax/getProductPrice/?params[productID]=5&params[quantity]={self.quantity}%2C00&params[transportationID]=21209&params[zipId]={zipid}']
+        self.zipid = zipid
+        self.start_urls = [
+	        f'https://www.waldera.cz/sys-ajax/loadTransports/?params[zipId]={zipid}&params[productId]=5',
+        ]
 
     def parse(self, response):
+        """
+        Vyzobne transportationID, ktere se furt meni.
+        """
+        transportationid = response.css('input[name="doprava"]').attrib['value']
+        url = f'https://www.waldera.cz/sys-ajax/getProductPrice/?params[productID]=5&params[quantity]={self.quantity}%2C00&params[transportationID]={transportationid}&params[zipId]={self.zipid}'
+        page  = response.urljoin(url)
+        yield scrapy.Request(page, callback=self.parse_product)
+
+    def parse_product(self, response):
+        """
+        Vyparsuje cenu paletek.
+        """
         price = response.json()["data"]["price"].replace('&nbsp;', '').replace('Kč', '').replace(',', '.').strip()
         quantity = response.json()["data"]["quantity"].replace('&nbsp;', '').replace(',', '.').strip()
-        return {"price": float(price), "quantity": int(float(quantity)), "date": str(date.today())}
+        yield {"price": float(price), "quantity": int(float(quantity)), "date": str(date.today())}
 
 
 class BiomacSpider(scrapy.Spider):
