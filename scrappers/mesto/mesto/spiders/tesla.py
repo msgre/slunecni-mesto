@@ -39,7 +39,6 @@ class TeslaSpider(scrapy.Spider):
             "outsideOffset":0,
             "outsideSearch":False
         }
-        breakpoint()
         query = quote(json.dumps(params))
         self.start_urls = [f'https://www.tesla.com/inventory/api/v1/inventory-results?query={query}']
 
