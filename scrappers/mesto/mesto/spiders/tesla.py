@@ -73,7 +73,7 @@ class TeslaSpider(scrapy.Spider):
             } for i in data['results']]
             approx_results = []
         return {
-            "count": data["total_matches_found"],
+            "count": int(data["total_matches_found"]),
             "results": results,
             "approx_count": len(approx_results),
             "approx_results": approx_results,
