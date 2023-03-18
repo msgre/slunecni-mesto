@@ -45,6 +45,7 @@ class TeslaSpider(scrapy.Spider):
     def parse(self, response):
         data = response.json()
         if 'approximate' in data['results']:
+            results = []
             approx_results = [{
                 'TRIM': i['TRIM'],
                 'PAINT': i['PAINT'],
@@ -58,9 +59,22 @@ class TeslaSpider(scrapy.Spider):
                 'Year': i['Year'],
             } for i in data['results']['approximate']]
         else:
+            results = [{
+                'TRIM': i['TRIM'],
+                'PAINT': i['PAINT'],
+                'INTERIOR': i['INTERIOR'],
+                'WHEELS': i['WHEELS'],
+                'ADL_OPTS': i['ADL_OPTS'],
+                'TotalPrice': i['TotalPrice'],
+                'City': i['City'],
+                'CurrencyCode': i['CurrencyCode'],
+                'EtaToCurrent': i['EtaToCurrent'],
+                'Year': i['Year'],
+            } for i in data['results']]
             approx_results = []
         return {
             "count": data["total_matches_found"],
+            "results": results,
             "approx_count": len(approx_results),
             "approx_results": approx_results,
             "options": self.params['query']['options'],
