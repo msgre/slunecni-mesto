@@ -50,6 +50,13 @@ TODAY=`/bin/date +%Y-%m-%d`
 TOMORROW=`/bin/date -d "1 day" "+%Y-%m-%d"`
 
 case "$1" in
+    pocasi)
+    random_seconds=$(/usr/bin/shuf -i 0-120 -n 1)
+    echo "Cekam $random_seconds sekund, jitter"
+    sleep $random_seconds
+	/usr/bin/docker run --rm -v /var/www/html/obedy:/output msgre/scrappers scrapy crawl pocasi -L ERROR -O /output/pocasi-${TODAY}.json:json
+	ln -sf /var/www/html/pocasi/pocasi-${TODAY}.json /var/www/html/pocasi/pocasi-latest.json
+        ;;
     obedy)
 	/usr/bin/docker run --rm -v /var/www/html/obedy:/output msgre/scrappers scrapy crawl icanteen -a canteen_id=<id> -L ERROR -O /output/obedy-${TODAY}.json:json
 	ln -sf /var/www/html/obedy/obedy-${TODAY}.json /var/www/html/obedy/obedy-latest.json
