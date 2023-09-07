@@ -51,11 +51,10 @@ TOMORROW=`/bin/date -d "1 day" "+%Y-%m-%d"`
 
 case "$1" in
     pocasi)
-    random_seconds=$(/usr/bin/shuf -i 0-120 -n 1)
-    echo "Cekam $random_seconds sekund, jitter"
+    random_seconds=$(/usr/bin/shuf -i 0-300 -n 1)
     sleep $random_seconds
-	/usr/bin/docker run --rm -v /var/www/html/obedy:/output msgre/scrappers scrapy crawl pocasi -L ERROR -O /output/pocasi-${TODAY}.json:json
-	ln -sf /var/www/html/pocasi/pocasi-${TODAY}.json /var/www/html/pocasi/pocasi-latest.json
+    /usr/bin/docker run --rm -v /var/www/html/pocasi:/output msgre/scrappers scrapy crawl pocasi -L ERROR -O /output/pocasi-${DATETIME}.json:json
+    ln -sf /var/www/html/pocasi/pocasi-${DATETIME}.json /var/www/html/pocasi/pocasi-latest.json
         ;;
     obedy)
 	/usr/bin/docker run --rm -v /var/www/html/obedy:/output msgre/scrappers scrapy crawl icanteen -a canteen_id=<id> -L ERROR -O /output/obedy-${TODAY}.json:json
@@ -91,4 +90,5 @@ Na cronjobu pak mam nastavene konkretni casy:
 2 0 * * * /path/cron.sh ote
 0 15 * * 1-5 /path/cron.sh cnb
 3 0 * * 1,3 /path/cron.sh peletky
+55 * * * * /path/cron.sh pocasi
 ```
