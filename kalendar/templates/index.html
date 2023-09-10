@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <style>
+        .dole {
+            padding-right:2em;
+        }
+        ol li {
+            position:relative;
+            left:-0.7em;
+        }
+    </style>
+  </head>
+  <body>
+
+    <div class="container" style="height:800px">
+        <div class="row h-100">
+            <div class="col h-100">
+                <table id="layout" class="h-100 w-100">
+                    {# datum #}
+                    <tr>
+                        <td colspan="4" class="text-start">
+                            <br>
+                            <h1>{{ weekday }} &nbsp;
+                            <small class="text-body-secondary">{{ now.day}}.&nbsp;{{ month }}</small></h1><br>
+                        </td>
+                    </tr>
+
+                    {# pocasi #}
+                    <tr>
+                        {% for item in pocasi %}
+                            <td width="25%" class="text-center">
+                                {{ item.title }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        {% for item in pocasi %}
+                            <td class="text-center">
+                                <img src="{{ item.data.next_6_hours.summary.icon }}" width="80%" alt="{{ item.data.next_6_hours.summary.symbol_code }}" />
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        {% for item in pocasi %}
+                            <td class="text-center">
+                                <p>
+                                    {{ item.data.next_6_hours.details.air_temperature_min | round | int }}&ndash;{{ item.data.next_6_hours.details.air_temperature_max | round | int }}&deg;C<br>
+                                    {{ item.data.next_6_hours.details.precipitation_amount }}&nbsp;mm
+                                </p>
+                            </td>
+                        {% endfor %}
+                    </tr>
+
+                    <tr>
+                        <td colspan="4">&nbsp;</td>
+                    </tr>
+
+                    {% if volno %}
+                        <tr>
+                            <td colspan="4" class="h-100 text-center">
+                                {{ fun | safe }}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="2" class="h-100 align-top dole">
+                                <h3>Škola a kroužky</h3>
+                                <table class="table table-sm">
+                                    {% for item in rozvrh %}
+                                      {% if (not item.support and not item.lichy) or (item.sudy and now.isocalendar().week % 2 == 0) or (item.lichy and now.isocalendar().week % 2 == 1) %}
+                                        <tr>
+                                            <td class="text-muted text-small"><small>{{ item.hodina }}.</small></td>
+                                            <td class="text-end">{{ item.od }}</td>
+                                            <td>&mdash;</td>
+                                            <td class="text-end">{{ item.do }}</td>
+                                            <td> </td>
+                                            <td class="text-center" width="100%"><b>{{ item.predmet }}</b></td>
+                                        </tr>
+                                      {% endif %}
+                                    {% endfor %}
+                                    {% if krouzky %}
+                                        <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td class="text-center">&vellip;</td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                        </tr>
+                                        {% for item in krouzky %}
+                                            <tr>
+                                                <td></td>
+                                                <td class="text-end">{{ item.od }}</td>
+                                                <td>&mdash;</td>
+                                                <td class="text-end">{{ item.do }}</td>
+                                                <td> </td>
+                                                <td class="text-center" width="100%"><b>{{ item.co }}</b></td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                </table>
+                            </td>
+                            <td colspan="2" class="align-top dole">
+                                <h3>Oběd</h3>
+                                <ol>
+                                    <li>{{ obed.lunch1 | replace('\n', '<br>') | safe }}</li>
+                                    {% if obed.lunch2 %}
+                                        <li>{{ obed.lunch2 | replace('\n', '<br>') | safe }}</li>
+                                    {% endif %}
+                                </ol>
+                                {% if povinnosti %}
+                                    <h3>Povinnosti</h3>
+                                    <ol>
+                                        {% for item in povinnosti %}
+                                            <li>{{ item }}</li>
+                                        {% endfor %}
+                                    </ol>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
