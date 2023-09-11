@@ -289,13 +289,13 @@ ROZVRH = {
             'hodina': 5,
             'od': '11:50',
             'do': '12:35',
-            'predmet': 'Přijímačky',
+            'predmet': 'PZ',
         },
         {
             'hodina': 6,
             'od': '12:45',
             'do': '13:30',
-            'predmet': 'Přijímačky',
+            'predmet': 'PZ',
         },
     ],
 
@@ -460,37 +460,36 @@ def process_pocasi(now):
 def hello_world():
     # co je za den
     now = arrow.now('Europe/Prague')
-
-    # volno?
-    volno = False
-    reason = None
-    if now.isoweekday() in (6, 7):
-        volno = True
-        reason = 'Víkend'
-    elif now.date() in VOLNA:
-        volno = True
-        reason = VOLNA[now.date()]
+    display_tomorrow = now.time().hour >= 19
 
     # pocasi
     pocasi = process_pocasi(now)
 
+    # volno?
+    volno = False
+    reason = None
+    if (not display_tomorrow and now.isoweekday() in (6, 7)) or (display_tomorrow and now.isoweekday() in (5, 6)):
+        volno = True
+        reason = 'Víkend!'
+    elif (not display_tomorrow and now.date() in VOLNA) or (display_tomorrow and now.shift(days=1).date() in VOLNA):
+        volno = True
+        reason = VOLNA[now.date()]
+
     # obedy
-    # volno = True # TODO:
-    # now = now.shift(days=2) # TODO:
-    r = requests.get('http://nuc.lan/obedy/obedy-latest.json')
-    # r = requests.get(f'http://nuc.lan/obedy/obedy-{now.shift(days=-1).strftime("%Y-%m-%d")}.json') # TODO:
-    r.raise_for_status()
     obed = None
-    for item in r.json():
-        if item['date'] == now.strftime('%Y-%m-%d'):
-            obed = item
-            break
-    if obed:
-        polevka, lunch1 = obed['lunch1'].split('\n')
-        obed['lunch1'] = lunch1.strip()
-        if obed.get('lunch2'):
-            obed['lunch2'] = obed['lunch2'].split('\n')[1].strip()
-        obed['polevka'] = polevka.strip()
+    if not volno:
+        r = requests.get('http://nuc.lan/obedy/obedy-latest.json')
+        r.raise_for_status()
+        for item in r.json():
+            if item['date'] == now.strftime('%Y-%m-%d'):
+                obed = item
+                break
+        if obed:
+            polevka, lunch1 = obed['lunch1'].split('\n')
+            obed['lunch1'] = lunch1.strip()
+            if obed.get('lunch2'):
+                obed['lunch2'] = obed['lunch2'].split('\n')[1].strip()
+            obed['polevka'] = polevka.strip()
 
     # komiks
     fun = None
@@ -501,10 +500,14 @@ def hello_world():
             soup.img.attrs['style'] = 'width:100%; height:auto'
             fun = str(soup)
 
-    isoweekday = now.isoweekday()
+    if display_tomorrow:
+        isoweekday = now.shift(days=1).isoweekday()
+    else:
+        isoweekday = now.isoweekday()
+    
     data = {
         'now': now,
-        'weekday': WEEKDAYS[isoweekday],
+        'weekday': WEEKDAYS[now.isoweekday()],
         'month': MONTHS[now.month],
         'rozvrh': ROZVRH.get(isoweekday),
         'krouzky': KROUZKY.get(isoweekday),
@@ -514,5 +517,6 @@ def hello_world():
         'reason': reason,
         'povinnosti': POVINNOSTI.get(now.isoweekday(), None),
         'fun': fun,
+        'display_tomorrow': display_tomorrow,
     }
     return render_template('index.html', **data)
