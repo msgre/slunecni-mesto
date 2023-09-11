@@ -426,12 +426,17 @@ def process_pocasi(now):
     look_for = [i.to('utc').strftime('%Y-%m-%dT%H:%M:%SZ') for i in look_for]
 
     # iteruj nad jednotlivymi zaznamy a najdi ty co hledame
-    first = True
     out = []
+    first = None
     for item in r.json()[0]["properties"]["timeseries"]:
-        if first:
-            first = False
+        if first is None or (arrow.get(item['time']) > arrow.get(first['time']) and arrow.get(item['time']) < now.ceil('hour')):
+            first = item
+            if out:
+                out.pop(0)
         elif item['time'] not in look_for:
+            continue
+
+        if 'data' not in item or 'next_6_hours' not in item['data']:
             continue
 
         item['data']['next_6_hours']['summary']['icon'] = f"http://nuc.lan/pocasi/svg/{ICONS[item['data']['next_6_hours']['summary']['symbol_code']]}"
@@ -450,9 +455,6 @@ def process_pocasi(now):
         else:
             item['title'] = 'Noc'
 
-    # TODO: preklad symbol_code na nejake jine jmeno souvisejici s ikonou
-    # TODO: nadposy pro jednotliva casova obdobi
-    # (noc, dopoledne, odpoledne, vecer)
     return out
 
 
