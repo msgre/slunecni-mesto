@@ -36,8 +36,9 @@
                     {# datum #}
                     <tr>
                         <td colspan="4" class="text-start" style="padding:25px 0 10px 0;">
-                            <h1 class="display-1">{{ weekday }} 
+                            <h1 style="float:left" class="display-1">{{ weekday }}
                             {{ now.day}}.&nbsp;{{ month }}</h1>
+                            <small style="font-size:60%;color:#999;float:right">{{ now.strftime("%H:%M:%S") }}</small>
                         </td>
                     </tr>
 
