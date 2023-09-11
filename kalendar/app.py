@@ -482,8 +482,12 @@ def hello_world():
     if not volno:
         r = requests.get('http://nuc.lan/obedy/obedy-latest.json')
         r.raise_for_status()
+        if display_tomorrow:
+            obed_now = now.shift(days=1).strftime('%Y-%m-%d')
+        else:
+            obed_now = now.strftime('%Y-%m-%d')
         for item in r.json():
-            if item['date'] == now.strftime('%Y-%m-%d'):
+            if item['date'] == obed_now:
                 obed = item
                 break
         if obed:
