@@ -475,8 +475,8 @@ def hello_world():
     pocasi = process_pocasi(now)
 
     # obedy
-    # volno = False # TODO:
-    # now = now.shift(days=-3) # TODO:
+    # volno = True # TODO:
+    # now = now.shift(days=2) # TODO:
     r = requests.get('http://nuc.lan/obedy/obedy-latest.json')
     # r = requests.get(f'http://nuc.lan/obedy/obedy-{now.shift(days=-1).strftime("%Y-%m-%d")}.json') # TODO:
     r.raise_for_status()
@@ -485,6 +485,12 @@ def hello_world():
         if item['date'] == now.strftime('%Y-%m-%d'):
             obed = item
             break
+    if obed:
+        polevka, lunch1 = obed['lunch1'].split('\n')
+        obed['lunch1'] = lunch1.strip()
+        if obed.get('lunch2'):
+            obed['lunch2'] = obed['lunch2'].split('\n')[1].strip()
+        obed['polevka'] = polevka.strip()
 
     # komiks
     fun = None
@@ -492,9 +498,8 @@ def hello_world():
         feed = feedparser.parse('https://xkcd.com/atom.xml')
         for item in feed.entries:
             soup = BeautifulSoup(item.summary)
-            # soup.img.attrs['src']
-            fun = item.summary
-
+            soup.img.attrs['style'] = 'width:100%; height:auto'
+            fun = str(soup)
 
     isoweekday = now.isoweekday()
     data = {
