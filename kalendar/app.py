@@ -1,4 +1,6 @@
 """
+Webová aplikace, která generuje stránku s informace pro čtečku Kindle.
+Více informací na blogpostu http://tkalci.cz/2023/zapisy/kindle-ctvrty.html
 """
 
 import arrow
