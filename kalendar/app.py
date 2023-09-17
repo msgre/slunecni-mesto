@@ -406,8 +406,11 @@ VOLNA = {
 }
 
 POVINNOSTI = {
-    1: ['Vysávání'],
-    4: ['Vysávání', 'Úklid pokoje'],
+    1: ['Vysávání', 'Plavání', 'Kytara'],
+    2: ['Kytara'],
+    3: ['Kytara'],
+    4: ['Vysávání', 'Úklid pokoje', 'Kytara'],
+    5: ['Kytara'],
 }
 
 def process_pocasi(now):
