@@ -460,6 +460,30 @@ def process_pocasi(now):
     return out
 
 
+def get_xkcd_image():
+    out = None
+    feed = feedparser.parse('https://xkcd.com/atom.xml')
+    for item in feed.entries:
+        soup = BeautifulSoup(item.summary)
+        soup.img.attrs['style'] = 'width:100%; height:auto'
+        out = str(soup)
+    return out
+
+
+def get_garfield(date):
+    r = requests.get(f'https://www.gocomics.com/garfield/{date.strftime("%Y/%m/%d")}')
+    if r.status_code != 200:
+        return None
+
+    soup = BeautifulSoup(r.content)
+    picture = soup.find_all('picture', {'class': "item-comic-image"})
+    if not picture:
+        return None
+
+    return picture[0].img.attrs['src']
+
+
+
 @app.route("/")
 def hello_world():
     # co je za den
@@ -474,7 +498,6 @@ def hello_world():
     reason = None
     if (not display_tomorrow and now.isoweekday() in (6, 7)) or (display_tomorrow and now.isoweekday() in (5, 6)):
         volno = True
-        reason = 'Víkend!'
     elif (not display_tomorrow and now.date() in VOLNA) or (display_tomorrow and now.shift(days=1).date() in VOLNA):
         volno = True
         reason = VOLNA[now.date()]
@@ -502,11 +525,8 @@ def hello_world():
     # komiks
     fun = None
     if volno:
-        feed = feedparser.parse('https://xkcd.com/atom.xml')
-        for item in feed.entries:
-            soup = BeautifulSoup(item.summary)
-            soup.img.attrs['style'] = 'width:100%; height:auto'
-            fun = str(soup)
+        # fun = get_xkcd_image()
+        fun = get_garfield(now.today())
 
     if display_tomorrow:
         isoweekday = now.shift(days=1).isoweekday()

@@ -72,7 +72,8 @@
                         <tr>
                             <td colspan="4" class="h-100 text-center" style="position:relative;top:-20px">
                                 <p>{% if reason %}{{ reason }}{% endif %}</p>
-                                {{ fun | safe }}
+                                {#{{ fun | safe }}#}
+                                <img src="{{ fun }}" class="img-fluid" />
                             </td>
                         </tr>
                     {% else %}
