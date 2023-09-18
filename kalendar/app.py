@@ -8,9 +8,14 @@ import requests
 import feedparser
 from datetime import date
 from bs4 import BeautifulSoup
+import os
 
 from flask import Flask
 from flask import render_template
+from flask import request
+
+BASE_DIR = os.path.dirname(__file__)
+BATTERY_PATH = f'{BASE_DIR}/battery.txt'
 
 app = Flask(__name__)
 
@@ -536,6 +541,17 @@ def hello_world():
     else:
         isoweekday = now.isoweekday()
     
+    # baterka
+    battery_state = request.args.get('battery')
+    if battery_state:
+        battery_state = battery_state.strip().strip('%')
+        with open(BATTERY_PATH, "wt") as f:
+            f.write(f'{battery_state}')
+        battery_state = int(battery_state)
+    elif os.path.exists(BATTERY_PATH):
+        with open(BATTERY_PATH, "rt") as f:
+            battery_state = int(f.readline().strip())
+
     data = {
         'now': now,
         'weekday': WEEKDAYS[now.isoweekday()],
@@ -549,5 +565,6 @@ def hello_world():
         'povinnosti': POVINNOSTI.get(now.isoweekday(), None),
         'fun': fun,
         'display_tomorrow': display_tomorrow,
+        'battery_state':battery_state,
     }
     return render_template('index.html', **data)

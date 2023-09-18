@@ -25,6 +25,34 @@
         p, table.table-sm td, ol li {
             font-size:120%;
         }
+	#over1 {
+		width:600px;
+		height:800px;
+		position:absolute;
+		top:0;
+		left:0;
+	}
+	#over1 p.battery {
+		position:absolute;
+		top:0;
+		right:0;
+		margin:10px 20px;
+		font-size:88%;
+		padding-top:4px;
+	}
+	#over1 p.battery img {
+		width:30px;
+		position:relative;
+		top:-1px;
+	}
+	#over1 p.time {
+		position:absolute;
+		bottom:0;
+		right:0;
+		margin:10px 15px;
+	    font-size:60%;
+	    color:#999;
+	}
     </style>
   </head>
   <body>
@@ -38,7 +66,6 @@
                         <td colspan="4" class="text-start" style="padding:25px 0 10px 0;">
                             <h1 style="float:left" class="display-1">{{ weekday }}
                             {{ now.day}}.&nbsp;{{ month }}</h1>
-                            <small style="font-size:60%;color:#999;float:right">{{ now.strftime("%H:%M:%S") }}</small>
                         </td>
                     </tr>
 
@@ -141,6 +168,24 @@
                 </table>
             </div>
         </div>
+    </div>
+    <div id="over1">
+	    <p class="battery">
+	      {% if battery_state == None %}
+	        ?
+		<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYmF0dGVyeSIgdmlld0JveD0iMCAwIDE2IDE2Ij4KICA8cGF0aCBkPSJNMCA2YTIgMiAwIDAgMSAyLTJoMTBhMiAyIDAgMCAxIDIgMnY0YTIgMiAwIDAgMS0yIDJIMmEyIDIgMCAwIDEtMi0yVjZ6bTItMWExIDEgMCAwIDAtMSAxdjRhMSAxIDAgMCAwIDEgMWgxMGExIDEgMCAwIDAgMS0xVjZhMSAxIDAgMCAwLTEtMUgyem0xNCAzYTEuNSAxLjUgMCAwIDEtMS41IDEuNXYtM0ExLjUgMS41IDAgMCAxIDE2IDh6Ii8+Cjwvc3ZnPg==" />
+	      {% else %}
+	        {{ battery_state }}% 
+		      {% if battery_state > 70 %}
+			       <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYmF0dGVyeS1mdWxsIiB2aWV3Qm94PSIwIDAgMTYgMTYiPgogIDxwYXRoIGQ9Ik0yIDZoMTB2NEgyVjZ6Ii8+CiAgPHBhdGggZD0iTTIgNGEyIDIgMCAwIDAtMiAydjRhMiAyIDAgMCAwIDIgMmgxMGEyIDIgMCAwIDAgMi0yVjZhMiAyIDAgMCAwLTItMkgyem0xMCAxYTEgMSAwIDAgMSAxIDF2NGExIDEgMCAwIDEtMSAxSDJhMSAxIDAgMCAxLTEtMVY2YTEgMSAwIDAgMSAxLTFoMTB6bTQgM2ExLjUgMS41IDAgMCAxLTEuNSAxLjV2LTNBMS41IDEuNSAwIDAgMSAxNiA4eiIvPgo8L3N2Zz4=" />
+		      {% elif battery_state > 25 %}
+			       <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYmF0dGVyeS1oYWxmIiB2aWV3Qm94PSIwIDAgMTYgMTYiPgogIDxwYXRoIGQ9Ik0yIDZoNXY0SDJWNnoiLz4KICA8cGF0aCBkPSJNMiA0YTIgMiAwIDAgMC0yIDJ2NGEyIDIgMCAwIDAgMiAyaDEwYTIgMiAwIDAgMCAyLTJWNmEyIDIgMCAwIDAtMi0ySDJ6bTEwIDFhMSAxIDAgMCAxIDEgMXY0YTEgMSAwIDAgMS0xIDFIMmExIDEgMCAwIDEtMS0xVjZhMSAxIDAgMCAxIDEtMWgxMHptNCAzYTEuNSAxLjUgMCAwIDEtMS41IDEuNXYtM0ExLjUgMS41IDAgMCAxIDE2IDh6Ii8+Cjwvc3ZnPg==" />
+		      {% else %}
+			       <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYmF0dGVyeSIgdmlld0JveD0iMCAwIDE2IDE2Ij4KICA8cGF0aCBkPSJNMCA2YTIgMiAwIDAgMSAyLTJoMTBhMiAyIDAgMCAxIDIgMnY0YTIgMiAwIDAgMS0yIDJIMmEyIDIgMCAwIDEtMi0yVjZ6bTItMWExIDEgMCAwIDAtMSAxdjRhMSAxIDAgMCAwIDEgMWgxMGExIDEgMCAwIDAgMS0xVjZhMSAxIDAgMCAwLTEtMUgyem0xNCAzYTEuNSAxLjUgMCAwIDEtMS41IDEuNXYtM0ExLjUgMS41IDAgMCAxIDE2IDh6Ii8+Cjwvc3ZnPg==" />
+		      {% endif %}
+	      {% endif %}
+	    </p>
+	    <p class="time">{{ now.strftime("%H:%M:%S") }}</p>
     </div>
 </body>
 </html>
