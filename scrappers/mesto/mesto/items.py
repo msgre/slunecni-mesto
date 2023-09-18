@@ -24,3 +24,15 @@ class MenuItem(scrapy.Item):
     human_date = scrapy.Field()
     lunch1 = scrapy.Field()
     lunch2 = scrapy.Field()
+
+
+class DonorItem(scrapy.Item):
+    date = scrapy.Field()
+    amount = scrapy.Field()
+    type = scrapy.Field()
+    account = scrapy.Field()
+    message = scrapy.Field()
+    ks = scrapy.Field()
+    vs = scrapy.Field()
+    ss = scrapy.Field()
+    note = scrapy.Field()
