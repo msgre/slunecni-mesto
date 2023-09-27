@@ -376,6 +376,7 @@ ICONS = {
 
 VOLNA = {
     # skola
+    date(2023, 9, 29): 'Ředitelské volno',
     date(2023, 10, 26): 'Podzimní prázdniny',
     date(2023, 10, 27): 'Podzimní prázdniny',
     
@@ -508,7 +509,7 @@ def hello_world():
         volno = True
     elif (not display_tomorrow and now.date() in VOLNA) or (display_tomorrow and now.shift(days=1).date() in VOLNA):
         volno = True
-        reason = VOLNA[now.date()]
+        reason = VOLNA.get(now.date(), VOLNA.get(now.shift(days=1).date()))
 
     # obedy
     obed = None
