@@ -412,7 +412,7 @@ VOLNA = {
 }
 
 POVINNOSTI = {
-    1: ['Vysávání', 'Plavání', 'Kytara'],
+    1: ['Vysávání', 'Plavání'],
     2: ['Kytara'],
     3: ['Kytara'],
     4: ['Vysávání', 'Úklid pokoje', 'Kytara'],
