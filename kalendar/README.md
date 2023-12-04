@@ -12,7 +12,7 @@ docker build . -t msgre/kindle-kalendar
 Spuštění webové aplikace:
 
 ```bash
-docker run --rm -ti -p 8085:8085 -v $PWD:/app msgre/kindle-kalendar
+docker run --name kalendar --rm -ti -p 8085:8085 -v $PWD:/app msgre/kindle-kalendar
 ```
 
 Nyní spusťte prohlížeč a zadejte adresu `http://localhost:8085`

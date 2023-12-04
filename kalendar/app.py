@@ -471,7 +471,10 @@ def process_pocasi(now):
 
 def get_xkcd_image():
     out = None
-    feed = feedparser.parse('https://xkcd.com/atom.xml')
+    try:
+        feed = feedparser.parse('https://xkcd.com/atom.xml')
+    except:
+        return None
     for item in feed.entries:
         soup = BeautifulSoup(item.summary)
         soup.img.attrs['style'] = 'width:100%; height:auto'
@@ -480,7 +483,10 @@ def get_xkcd_image():
 
 
 def get_garfield(date):
-    r = requests.get(f'https://www.gocomics.com/garfield/{date.strftime("%Y/%m/%d")}')
+    try:
+        r = requests.get(f'https://www.gocomics.com/garfield/{date.strftime("%Y/%m/%d")}')
+    except:
+        return None
     if r.status_code != 200:
         return None
 
