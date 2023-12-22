@@ -14,6 +14,8 @@ from flask import Flask
 from flask import render_template
 from flask import request
 
+from requests.exceptions import JSONDecodeError
+
 BASE_DIR = os.path.dirname(__file__)
 BATTERY_PATH = f'{BASE_DIR}/battery.txt'
 
@@ -521,15 +523,20 @@ def hello_world():
     obed = None
     if not volno:
         r = requests.get('http://nuc.lan/obedy/obedy-latest.json')
-        r.raise_for_status()
-        if display_tomorrow:
-            obed_now = now.shift(days=1).strftime('%Y-%m-%d')
+        if r.status_code == 200:
+            if display_tomorrow:
+                obed_now = now.shift(days=1).strftime('%Y-%m-%d')
+            else:
+                obed_now = now.strftime('%Y-%m-%d')
+            try:
+                for item in r.json():
+                    if item['date'] == obed_now:
+                        obed = item
+                        break
+            except JSONDecodeError:
+                obed = None
         else:
-            obed_now = now.strftime('%Y-%m-%d')
-        for item in r.json():
-            if item['date'] == obed_now:
-                obed = item
-                break
+            obed = None
         if obed:
             polevka, lunch1 = obed['lunch1'].split('\n')
             obed['lunch1'] = lunch1.strip()
