@@ -28,7 +28,7 @@ class MlynarkaSpider(scrapy.Spider):
             cells = item.css('td')
             data = self.clean_values({
                 "date": "".join([y.get().strip() for y in cells[0].css('::text')]),
-                "amount": "".join([y.get().strip() for y in cells[1].css('::text')]),
+                "amount": "".join([y.get().strip() for y in cells[1].css('::text')]).replace('CZK', '').replace('\xa0', '').replace(',', '.'),
                 "type": "".join([y.get().strip() for y in cells[2].css('::text')]),
                 "account": "".join([y.get().strip() for y in cells[3].css('::text')]),
                 "message": "".join([y.get().strip() for y in cells[4].css('::text')]),
