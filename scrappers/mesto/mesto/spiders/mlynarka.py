@@ -27,15 +27,15 @@ class MlynarkaSpider(scrapy.Spider):
         for item in response.css('table')[1].css('tbody tr'):
             cells = item.css('td')
             data = self.clean_values({
-                "date": cells[0].css('::text').get(),
-                "amount": cells[1].css('::text').get().replace('CZK', '').replace('\xa0', '').replace(',', '.'),
-                "type": cells[2].css('::text').get(),
-                "account": cells[3].css('::text').get(),
-                "message": cells[4].css('::text').get(),
-                "ks": cells[5].css('::text').get(),
-                "vs": cells[6].css('::text').get(),
-                "ss": cells[7].css('::text').get(),
-                "note": cells[8].css('::text').get(),
+                "date": "".join([y.get().strip() for y in cells[0].css('::text')]),
+                "amount": "".join([y.get().strip() for y in cells[1].css('::text')]),
+                "type": "".join([y.get().strip() for y in cells[2].css('::text')]),
+                "account": "".join([y.get().strip() for y in cells[3].css('::text')]),
+                "message": "".join([y.get().strip() for y in cells[4].css('::text')]),
+                "ks": "".join([y.get().strip() for y in cells[5].css('::text')]),
+                "vs": "".join([y.get().strip() for y in cells[6].css('::text')]),
+                "ss": "".join([y.get().strip() for y in cells[7].css('::text')]),
+                "note": "".join([y.get().strip() for y in cells[8].css('::text')]),
             })
             data['date'] = self.parse_date(data['date'])
             data['amount'] = str(Decimal(data['amount']))
